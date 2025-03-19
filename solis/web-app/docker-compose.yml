@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  database:
+    build: ./database
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  webapp:
+    build: ./webapp
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://admin:adminpass@database/productdb
+    depends_on:
+      - database
+  proxy:
+    build: ./proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - webapp
+volumes:
+  pgdata:
